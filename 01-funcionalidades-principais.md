@@ -38,3 +38,7 @@ Formato de saída: lista Markdown, cada item no formato `- **Nome da feature**: 
 - [ ] Cada feature é implementável combinando RAWG API + backend próprio
 - [ ] Nenhuma feature depende de integração externa não documentada
 - [ ] Funcionalidades de auth/cadastro tratadas como pré-requisito, não como feature core
+
+---
+
+> **Ferramenta utilizada:** Claude (Anthropic), modelo Opus 4.8.
