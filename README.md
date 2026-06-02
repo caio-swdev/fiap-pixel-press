@@ -10,11 +10,11 @@ Plataforma de gerenciamento e descoberta de jogos utilizando a API da RAWG.io co
 
 * [00. Atividade.md](./atividade.md)
 * [01. Funcionalidades Principais](./01-funcionalidades-principais.md)
-* [02. Tipos de Usuários](./02-tipos-de-usuarios.md)
-* [03. Arquitetura do Sistema](./03-arquitetura-do-sistema.md)
-* [04. Entidades e Relacionamentos](./04-entidades-e-relacionamentos.md)
-* [05. Endpoints da API](./05-endpoints-api.md)
-* [06. Tecnologias Sugeridas](./06-tecnologias-sugeridas.md)
+* [02. Tipos de Usuários e Permissões](./02-usuarios-permissoes.md)
+* [03. Diagrama de Arquitetura (Camadas)](./03-arquitetura-camadas.md)
+* [04. Entidades Principais e Relacionamentos](./04-entidades-relacionamentos.md)
+* [05. Endpoints da API (Rotas REST)](./05-endpoints-api.md)
+* [06. Tecnologias Sugeridas](./06-tecnologias.md)
 * [07. Fluxos Principais](./07-fluxos-principais.md)
 
 ---
