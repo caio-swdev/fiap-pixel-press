@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useSession } from '../auth/session';
 
@@ -12,19 +11,16 @@ const MUTED = '#9890AB';
 const FAINT = '#615A75';
 
 const GAMES = [
-  { title: 'Elden Ring',      slug: 'elden-ring',      h: 280 },
-  { title: 'Hades',           slug: 'hades',           h: 18  },
-  { title: 'Hollow Knight',   slug: 'hollow-knight',   h: 200 },
-  { title: 'Celeste',         slug: 'celeste',         h: 330 },
-  { title: "Baldur's Gate 3", slug: 'baldurs-gate-3',  h: 35  },
-  { title: 'Stardew Valley',  slug: 'stardew-valley',  h: 120 },
+  { title: 'Elden Ring',      slug: 'elden-ring',      h: 280, cover: '/covers/elden-ring.jpg' },
+  { title: 'Hades',           slug: 'hades',           h: 18,  cover: '/covers/hades.jpg' },
+  { title: 'Hollow Knight',   slug: 'hollow-knight',   h: 200, cover: '/covers/hollow-knight.jpg' },
+  { title: 'Celeste',         slug: 'celeste',         h: 330, cover: '/covers/celeste.jpg' },
+  { title: "Baldur's Gate 3", slug: 'baldurs-gate-3',  h: 35,  cover: '/covers/baldurs-gate-3.jpg' },
+  { title: 'Stardew Valley',  slug: 'stardew-valley',  h: 120, cover: '/covers/stardew-valley.jpg' },
 ];
 const FLOAT_DUR = [3.4, 4.2, 3.8, 5.0, 4.6, 3.6];
 const FLOAT_DEL = [0, 0.5, 1.0, 0.25, 0.75, 1.25];
 
-function coverBg(h: number) {
-  return `radial-gradient(125% 120% at 22% 8%, hsl(${h},78%,52%), hsl(${h + 34},62%,30%) 46%, hsl(${h + 18},55%,11%) 100%)`;
-}
 
 const STEPS = [
   { n: 1, title: 'Busque no catálogo', body: 'Mais de 800 mil títulos indexados via RAWG API.' },
@@ -94,19 +90,6 @@ const FEATURE_MAP: { emoji: string; domain: string; role: keyof typeof ROLES; it
 
 export function LandingPage() {
   const { autenticado } = useSession();
-  const [covers, setCovers] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const base = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:3000/api/v1';
-    GAMES.forEach(({ slug }) => {
-      fetch(`${base}/games/${slug}`)
-        .then(r => (r.ok ? r.json() : Promise.reject()))
-        .then((data: { capaUrl?: string | null }) => {
-          if (data.capaUrl) setCovers(prev => ({ ...prev, [slug]: data.capaUrl! }));
-        })
-        .catch(() => {});
-    });
-  }, []);
 
   if (autenticado) return <Navigate to="/catalogo" replace />;
 
@@ -195,10 +178,8 @@ export function LandingPage() {
           <div className="lp-showcase" style={{ height: 480, perspective: '1400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, transform: 'rotateY(-18deg) rotateX(6deg) rotateZ(2deg)', transformStyle: 'preserve-3d', width: '100%' }}>
               {GAMES.map((g, i) => {
-                const img = covers[g.slug];
                 return (
-                  <div key={g.title} className="lp-float" style={{ aspectRatio: '3/4', borderRadius: 13, overflow: 'hidden', position: 'relative', background: img ? `url(${img}) center/cover` : coverBg(g.h), boxShadow: '0 24px 50px -18px rgba(0,0,0,0.8)', transition: 'background 0.4s ease', ['--fd' as string]: `${FLOAT_DUR[i]}s`, ['--fdl' as string]: `${FLOAT_DEL[i]}s` }}>
-                    {!img && <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg,rgba(0,0,0,0.16) 0 1px,transparent 1px 4px)', mixBlendMode: 'overlay' }} />}
+                  <div key={g.title} className="lp-float" style={{ aspectRatio: '3/4', borderRadius: 13, overflow: 'hidden', position: 'relative', background: `url(${g.cover}) center/cover`, boxShadow: '0 24px 50px -18px rgba(0,0,0,0.8)', ['--fd' as string]: `${FLOAT_DUR[i]}s`, ['--fdl' as string]: `${FLOAT_DEL[i]}s` }}>
                     <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px 10px', background: 'linear-gradient(to top,rgba(0,0,0,0.8),transparent)' }}>
                       <span style={{ fontSize: 11, fontWeight: 700, color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>{g.title}</span>
                     </div>
