@@ -119,6 +119,12 @@ export interface LoginPayload {
   senha: string;
 }
 
+export interface RegisterPayload {
+  email: string;
+  nome: string;
+  senha: string;
+}
+
 export interface AdicionarBibliotecaPayload {
   jogoSlug: string;
   status: StatusBiblioteca;

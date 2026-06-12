@@ -2,63 +2,39 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useSession } from '../auth/session';
 import { ApiError } from '../api/errors';
 import { Button } from '../components/ui/Button';
 import { Input, Label, FieldError } from '../components/ui/Field';
-import { Badge } from '../components/ui/Badge';
 
 const schema = z.object({
+  nome: z.string().min(2, 'Informe ao menos 2 caracteres.').max(80, 'Máximo de 80 caracteres.'),
   email: z.string().email('Informe um e-mail válido.'),
-  senha: z.string().min(1, 'Informe a senha.'),
+  senha: z.string().min(6, 'A senha precisa ter ao menos 6 caracteres.').max(72, 'Máximo de 72 caracteres.'),
 });
 type FormValores = z.infer<typeof schema>;
 
-interface Atalho {
-  papel: string;
-  email: string;
-  cor: string;
-}
-
-const ATALHOS: Atalho[] = [
-  { papel: 'Admin', email: 'admin@pixelpress.dev', cor: 'border-accent/50 text-accent bg-accent/10' },
-  { papel: 'Moderador', email: 'moderador@pixelpress.dev', cor: 'border-info/40 text-info bg-info/10' },
-  { papel: 'Usuário', email: 'usuario@pixelpress.dev', cor: 'border-line text-muted bg-surface-2' },
-  { papel: 'Inativo', email: 'inativo@pixelpress.dev', cor: 'border-danger/40 text-danger bg-danger/10' },
-];
-
-const SENHA_SEED = 'Senha@123';
-
-export function LoginPage() {
-  const { autenticado, entrar } = useSession();
+export function RegisterPage() {
+  const { autenticado, registrar } = useSession();
   const navigate = useNavigate();
-  const location = useLocation();
   const [erro, setErro] = useState<string | null>(null);
 
-  const destino = (location.state as { from?: string } | null)?.from ?? '/catalogo';
-
-  const { register, handleSubmit, setValue, formState } = useForm<FormValores>({
+  const { register, handleSubmit, formState } = useForm<FormValores>({
     resolver: zodResolver(schema),
-    defaultValues: { email: '', senha: '' },
+    defaultValues: { nome: '', email: '', senha: '' },
   });
 
-  if (autenticado) return <Navigate to={destino} replace />;
+  if (autenticado) return <Navigate to="/catalogo" replace />;
 
   async function onSubmit(valores: FormValores) {
     setErro(null);
     try {
-      await entrar(valores);
-      navigate(destino, { replace: true });
+      await registrar(valores);
+      navigate('/catalogo', { replace: true });
     } catch (e) {
-      setErro(e instanceof ApiError ? e.message : 'Não foi possível entrar.');
+      setErro(e instanceof ApiError ? e.message : 'Não foi possível criar a conta.');
     }
-  }
-
-  function preencher(email: string) {
-    setValue('email', email, { shouldValidate: true });
-    setValue('senha', SENHA_SEED, { shouldValidate: true });
-    setErro(null);
   }
 
   return (
@@ -90,12 +66,12 @@ export function LoginPage() {
         <div className="relative max-w-md">
           <p className="label-mono mb-4">Catálogo · Biblioteca · Reviews · Moderação</p>
           <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight">
-            Seu acervo de jogos,{' '}
-            <span className="text-accent">organizado como um arcade.</span>
+            Crie sua conta e{' '}
+            <span className="text-accent">monte seu acervo.</span>
           </h1>
           <p className="mt-5 text-sm leading-relaxed text-muted">
-            Busque no catálogo real da RAWG, monte sua biblioteca, avalie seus jogos e acompanhe a
-            moderação. A interface espelha exatamente os papéis e permissões do backend.
+            Toda conta nova entra como Usuário. Busque no catálogo real da RAWG, organize sua
+            biblioteca e avalie seus jogos.
           </p>
         </div>
 
@@ -108,11 +84,16 @@ export function LoginPage() {
       <div className="flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-sm animate-fade-up">
           <div className="mb-8">
-            <h2 className="font-display text-2xl font-bold tracking-tight">Entrar</h2>
-            <p className="mt-1.5 text-sm text-muted">Use uma das credenciais do seed para a demo.</p>
+            <h2 className="font-display text-2xl font-bold tracking-tight">Criar conta</h2>
+            <p className="mt-1.5 text-sm text-muted">Leva menos de um minuto.</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+            <div>
+              <Label htmlFor="nome">Nome</Label>
+              <Input id="nome" type="text" autoComplete="name" placeholder="Seu nome" {...register('nome')} />
+              <FieldError>{formState.errors.nome?.message}</FieldError>
+            </div>
             <div>
               <Label htmlFor="email">E-mail</Label>
               <Input id="email" type="email" autoComplete="username" placeholder="voce@pixelpress.dev" {...register('email')} />
@@ -120,7 +101,7 @@ export function LoginPage() {
             </div>
             <div>
               <Label htmlFor="senha">Senha</Label>
-              <Input id="senha" type="password" autoComplete="current-password" placeholder="••••••••" {...register('senha')} />
+              <Input id="senha" type="password" autoComplete="new-password" placeholder="••••••••" {...register('senha')} />
               <FieldError>{formState.errors.senha?.message}</FieldError>
             </div>
 
@@ -134,42 +115,16 @@ export function LoginPage() {
             )}
 
             <Button type="submit" tamanho="lg" className="w-full" carregando={formState.isSubmitting}>
-              Entrar
+              Criar conta
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
-            Não tem conta?{' '}
-            <Link to="/cadastro" className="font-medium text-accent hover:underline">
-              Criar conta
+            Já tem conta?{' '}
+            <Link to="/login" className="font-medium text-accent hover:underline">
+              Entrar
             </Link>
           </p>
-
-          <div className="mt-8">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="h-px flex-1 bg-line" />
-              <span className="label-mono">Credenciais do seed</span>
-              <span className="h-px flex-1 bg-line" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {ATALHOS.map((a) => (
-                <button
-                  key={a.email}
-                  type="button"
-                  onClick={() => preencher(a.email)}
-                  className="focus-ring group flex flex-col items-start gap-1 rounded-lg border border-line bg-surface-2/50 p-3 text-left transition-colors hover:border-accent/40 hover:bg-surface-2"
-                >
-                  <Badge className={a.cor}>{a.papel}</Badge>
-                  <span className="truncate font-mono text-[10px] text-muted-2 group-hover:text-muted">
-                    {a.email}
-                  </span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 text-center font-mono text-[10px] text-muted-2">
-              senha de todos: <span className="text-muted">{SENHA_SEED}</span>
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { AppShell } from './components/AppShell';
 import { RequireAuth, RequireRole } from './auth/guards';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { CatalogPage } from './pages/CatalogPage';
 import { GameDetailPage } from './pages/GameDetailPage';
 import { LibraryPage } from './pages/LibraryPage';
@@ -15,6 +16,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/cadastro" element={<RegisterPage />} />
 
       {/* Tudo abaixo exige sessão (guarda de rota privada). */}
       <Route element={<RequireAuth />}>

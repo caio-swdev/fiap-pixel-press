@@ -13,12 +13,13 @@ import {
 } from 'react';
 import { sessionStore, type Sessao } from '../api/session-store';
 import * as api from '../api/endpoints';
-import type { LoginPayload, Papel, UsuarioSessao } from '../api/types';
+import type { LoginPayload, Papel, RegisterPayload, UsuarioSessao } from '../api/types';
 
 interface SessionContextValue {
   usuario: UsuarioSessao | null;
   autenticado: boolean;
   entrar: (payload: LoginPayload) => Promise<void>;
+  registrar: (payload: RegisterPayload) => Promise<void>;
   sair: () => void;
 }
 
@@ -39,6 +40,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Registro: cria a conta e já autentica (o backend devolve tokens no register).
+  const registrar = useCallback(async (payload: RegisterPayload) => {
+    const resposta = await api.registrarUsuario(payload);
+    sessionStore.salvar({
+      accessToken: resposta.access_token,
+      refreshToken: resposta.refresh_token,
+      usuario: resposta.usuario,
+    });
+  }, []);
+
   const sair = useCallback(() => {
     sessionStore.limpar();
   }, []);
@@ -48,9 +59,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       usuario: sessao?.usuario ?? null,
       autenticado: sessao !== null,
       entrar,
+      registrar,
       sair,
     }),
-    [sessao, entrar, sair],
+    [sessao, entrar, registrar, sair],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

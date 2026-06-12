@@ -17,6 +17,7 @@ import type {
   OcultarReviewPayload,
   Paginado,
   Papel,
+  RegisterPayload,
   RespostaAuth,
   Review,
   Usuario,
@@ -26,6 +27,12 @@ import type {
 export async function login(payload: LoginPayload): Promise<RespostaAuth> {
   // silent: a tela de login mostra o erro inline, sem toast duplicado.
   const { data } = await http.post<RespostaAuth>('/auth/login', payload, { silent: true });
+  return data;
+}
+
+export async function registrarUsuario(payload: RegisterPayload): Promise<RespostaAuth> {
+  // silent: a tela de cadastro mostra o erro inline, sem toast duplicado.
+  const { data } = await http.post<RespostaAuth>('/auth/register', payload, { silent: true });
   return data;
 }
 
