@@ -1,0 +1,18 @@
+{
+  "name": "pixelpress",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PixelPress monorepo — api (NestJS) + web (React/Vite)",
+  "scripts": {
+    "dev:api": "pnpm --filter pixelpress-backend start:dev",
+    "dev:web": "pnpm --filter pixelpress-frontend dev",
+    "build:api": "pnpm --filter pixelpress-backend build",
+    "build:web": "pnpm --filter pixelpress-frontend build",
+    "build": "pnpm -r build",
+    "db:reset": "pnpm --filter pixelpress-backend db:reset",
+    "db:seed": "pnpm --filter pixelpress-backend db:seed"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma", "bcrypt", "@nestjs/core", "@scarf/scarf", "esbuild"]
+  }
+}

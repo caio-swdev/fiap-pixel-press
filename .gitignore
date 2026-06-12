@@ -1,16 +1,17 @@
-# dependencies
-/node_modules
+# dependencies (any package in the workspace)
+node_modules/
 
-# build
-/dist
+# build output
+dist/
+dist-ssr/
 *.tsbuildinfo
+.vite/
 
 # env
 .env
+*.local
 
 # SQLite (efêmero, recriado via db:reset / boot)
-prisma/dev.db
-prisma/dev.db-journal
 *.db
 *.db-journal
 
@@ -19,3 +20,6 @@ prisma/dev.db-journal
 
 # OS
 .DS_Store
+
+# workflow/session junk
+.wf/
