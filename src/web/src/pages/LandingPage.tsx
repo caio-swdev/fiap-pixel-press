@@ -26,17 +26,70 @@ function coverBg(h: number) {
   return `radial-gradient(125% 120% at 22% 8%, hsl(${h},78%,52%), hsl(${h + 34},62%,30%) 46%, hsl(${h + 18},55%,11%) 100%)`;
 }
 
-const FEATURES = [
-  { emoji: '🎮', title: 'Biblioteca pessoal', body: 'Marque cada jogo como jogando, zerado, platinado, dropei ou quero jogar.', tint: 'rgba(91,140,255,0.16)' },
-  { emoji: '★', title: 'Avaliações & reviews', body: 'Notas de 0 a 10 e texto livre, com opção de marcar como spoiler.', tint: 'rgba(245,196,81,0.16)' },
-  { emoji: '📚', title: 'Listas & wishlist', body: 'Monte coleções temáticas e receba alerta quando o lançamento chega.', tint: 'rgba(168,85,247,0.16)' },
-  { emoji: '📊', title: 'Perfil com estatísticas', body: 'Gêneros mais jogados, top estúdios e gráfico de atividade.', tint: 'rgba(61,220,132,0.16)' },
-];
-
 const STEPS = [
   { n: 1, title: 'Busque no catálogo', body: 'Mais de 800 mil títulos indexados via RAWG API.' },
   { n: 2, title: 'Adicione à biblioteca', body: 'Escolha o status e opcionalmente uma nota.' },
   { n: 3, title: 'Avalie e compartilhe', body: 'Escreva reviews, monte listas e exporte estatísticas.' },
+];
+
+// Mapa de papéis — RBAC hierárquico (USUARIO ⊆ MODERADOR ⊆ ADMIN).
+const ROLES = {
+  publico:   { label: 'Público',   color: FAINT },
+  usuario:   { label: 'Usuário',   color: '#34E5FF' },
+  moderador: { label: 'Moderador', color: '#A855F7' },
+  admin:     { label: 'Admin',     color: '#FF3D8B' },
+} as const;
+
+// Referência de tudo que o MVP entrega, agrupado por domínio (espelha a API /api/v1).
+const FEATURE_MAP: { emoji: string; domain: string; role: keyof typeof ROLES; items: string[] }[] = [
+  {
+    emoji: '🔑', domain: 'Autenticação & RBAC', role: 'publico',
+    items: [
+      'Cadastro e login com JWT (access + refresh token)',
+      'Renovação de sessão automática no expirar do token',
+      'Papéis hierárquicos: Usuário ⊆ Moderador ⊆ Admin',
+    ],
+  },
+  {
+    emoji: '🎮', domain: 'Catálogo', role: 'usuario',
+    items: [
+      'Busca em +800 mil jogos via RAWG API, com paginação',
+      'Página de detalhe: descrição, lançamento, gêneros, plataformas',
+      'Metacritic, rating e galeria de screenshots',
+    ],
+  },
+  {
+    emoji: '📚', domain: 'Biblioteca pessoal', role: 'usuario',
+    items: [
+      '5 status de tracking: jogando, zerado, quero jogar, dropei, platinado',
+      'Registro de horas jogadas por título',
+      'Adicionar, atualizar status e remover itens',
+    ],
+  },
+  {
+    emoji: '★', domain: 'Reviews & avaliações', role: 'usuario',
+    items: [
+      'Nota de 0 a 10 + texto livre (até 5.000 caracteres)',
+      'Marcação de spoiler com aviso na exibição',
+      'Editar e excluir as próprias reviews',
+    ],
+  },
+  {
+    emoji: '🛡️', domain: 'Moderação', role: 'moderador',
+    items: [
+      'Denúncia de reviews pela comunidade',
+      'Fila de denúncias pendentes para revisão',
+      'Ocultar reviews que violem as regras',
+    ],
+  },
+  {
+    emoji: '⚙️', domain: 'Administração', role: 'admin',
+    items: [
+      'Listagem e consulta de todos os usuários',
+      'Atribuição de papéis (promover/rebaixar)',
+      'Controle de acesso aplicado no backend (não só na UI)',
+    ],
+  },
 ];
 
 export function LandingPage() {
@@ -63,8 +116,8 @@ export function LandingPage() {
         .lp { font-family: 'Space Grotesk', 'Sora', sans-serif; background: ${BG}; color: ${FG}; min-height: 100vh; overflow-x: hidden; }
         @keyframes lp-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         .lp-float { animation: lp-float var(--fd,4s) ease-in-out infinite; animation-delay: var(--fdl,0s); }
-        .lp-feat { background: ${SURF}; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 28px 24px; transition: border-color .2s, transform .2s; cursor: default; }
-        .lp-feat:hover { border-color: rgba(168,85,247,.30); transform: translateY(-4px); }
+        .lp-map-card { transition: border-color .2s, transform .2s; }
+        .lp-map-card:hover { border-color: rgba(168,85,247,.30); transform: translateY(-3px); }
         .lp-nav-link { color: ${MUTED}; font-size: 14px; text-decoration: none; transition: color .15s; }
         .lp-nav-link:hover { color: ${FG}; }
         @media (max-width: 900px) {
@@ -164,24 +217,51 @@ export function LandingPage() {
           ))}
         </div>
 
-        {/* ── Features ───────────────────────────────────────────────────── */}
-        <section id="recursos" style={{ padding: '90px 6vw', maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+        {/* ── Recursos (mapa completo de features por área e acesso) ─────── */}
+        <section id="recursos" style={{ padding: '90px 6vw 70px', maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 14 }}>
             <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: V, marginBottom: 12 }}>RECURSOS</div>
             <h2 style={{ fontSize: 'clamp(30px,3.5vw,42px)', fontWeight: 700, letterSpacing: '-0.03em', margin: 0 }}>
-              Tudo que um jogador-arquivista precisa
+              Tudo que você pode fazer
             </h2>
+            <p style={{ color: MUTED, fontSize: 15.5, margin: '14px auto 0', maxWidth: 560, lineHeight: 1.6 }}>
+              Todos os recursos da plataforma, organizados por área e nível de acesso.
+            </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 18 }}>
-            {FEATURES.map(f => (
-              <div key={f.title} className="lp-feat">
-                <div style={{ width: 46, height: 46, borderRadius: 12, background: f.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 16 }}>
-                  {f.emoji}
-                </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>{f.title}</h3>
-                <p style={{ fontSize: 14.5, color: MUTED, margin: 0, lineHeight: 1.6 }}>{f.body}</p>
-              </div>
+
+          {/* Legenda de papéis */}
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 16, margin: '24px 0 32px' }}>
+            {Object.values(ROLES).map(r => (
+              <span key={r.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: "'Space Mono',monospace", fontSize: 11.5, letterSpacing: '0.05em', color: MUTED }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: r.color, boxShadow: `0 0 8px ${r.color}99` }} />
+                {r.label}
+              </span>
             ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
+            {FEATURE_MAP.map(group => {
+              const role = ROLES[group.role] ?? ROLES.publico;
+              return (
+                <div key={group.domain} className="lp-map-card" style={{ background: SURF, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '24px 24px 22px', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{ width: 40, height: 40, borderRadius: 11, background: `${role.color}22`, display: 'grid', placeItems: 'center', fontSize: 19 }}>{group.emoji}</span>
+                      <h3 style={{ fontSize: 17, fontWeight: 700, margin: 0, letterSpacing: '-0.01em' }}>{group.domain}</h3>
+                    </div>
+                    <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: role.color, border: `1px solid ${role.color}55`, borderRadius: 20, padding: '4px 10px', whiteSpace: 'nowrap' }}>{role.label}</span>
+                  </div>
+                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {group.items.map(item => (
+                      <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14, color: MUTED, lineHeight: 1.5 }}>
+                        <span style={{ color: role.color, flexShrink: 0, marginTop: 1 }}>▸</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </section>
 
