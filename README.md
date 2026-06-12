@@ -3,8 +3,9 @@
 Plataforma de gerenciamento e descoberta de jogos utilizando a API da RAWG.io como fonte principal de dados.
 
 > **MVP executável — monorepo pnpm.** Todo o código vive em [`src/`](./src): `src/api` (backend NestJS)
-> e `src/web` (frontend React/Vite). Documentação e relatórios em [`docs/`](./docs).
-> Guia de execução abaixo. Relatório da entrega em [`docs/RELATORIO-MVP.md`](./docs/RELATORIO-MVP.md).
+> e `src/web` (frontend React/Vite). Material da entrega (arquitetura, relatórios, prompts) em
+> [`academic/`](./academic); documentação operacional (IaC / deploy) em [`documentation/`](./documentation).
+> Guia de execução abaixo. Relatório da entrega em [`academic/RELATORIO-MVP.md`](./academic/RELATORIO-MVP.md).
 
 ---
 
@@ -17,7 +18,8 @@ fiap-pixel-press/
 │   ├── web/              # frontend React + Vite + Tailwind
 │   ├── package.json      # raiz do workspace (scripts dev:api / dev:web)
 │   └── pnpm-workspace.yaml
-└── docs/                 # arquitetura, relatórios, prompts de agentes
+├── academic/            # entrega FIAP: arquitetura, relatórios, prompts de agentes
+└── documentation/       # documentação operacional (IaC / deploy)
 ```
 
 ---
@@ -25,7 +27,7 @@ fiap-pixel-press/
 # 🚀 Rodar o projeto
 
 Demo de baixa infraestrutura: **sem Docker**. Banco **SQLite em arquivo** e **cache in-process**
-(desvios conscientes de `docs/context/`, ver relatório). O catálogo é a **RAWG real**.
+(desvios conscientes de `academic/context/`, ver relatório). O catálogo é a **RAWG real**.
 
 ## Pré-requisitos
 
@@ -120,16 +122,16 @@ Erros no envelope `{ "error": { "code", "message", "details" } }`. Módulos `lis
 
 # 📚 Documentação de domínio
 
-A pasta [`docs/context/`](./docs/context) é a fonte de verdade técnica (standards, architecture,
+A pasta [`academic/context/`](./academic/context) é a fonte de verdade técnica (standards, architecture,
 tech-stack, business-rules). Os documentos originais de domínio:
 
-* [01. Funcionalidades Principais](./docs/01-arquitetura/01-funcionalidades-principais.md)
-* [02. Tipos de Usuários e Permissões](./docs/01-arquitetura/02-usuarios-permissoes.md)
-* [03. Diagrama de Arquitetura (Camadas)](./docs/01-arquitetura/03-arquitetura-camadas.md)
-* [04. Entidades Principais e Relacionamentos](./docs/01-arquitetura/04-entidades-relacionamentos.md)
-* [05. Endpoints da API (Rotas REST)](./docs/01-arquitetura/05-endpoints-api.md)
-* [06. Tecnologias Sugeridas](./docs/01-arquitetura/06-tecnologias.md)
-* [07. Fluxos Principais](./docs/01-arquitetura/07-fluxos-principais.md)
+* [01. Funcionalidades Principais](./academic/01-arquitetura/01-funcionalidades-principais.md)
+* [02. Tipos de Usuários e Permissões](./academic/01-arquitetura/02-usuarios-permissoes.md)
+* [03. Diagrama de Arquitetura (Camadas)](./academic/01-arquitetura/03-arquitetura-camadas.md)
+* [04. Entidades Principais e Relacionamentos](./academic/01-arquitetura/04-entidades-relacionamentos.md)
+* [05. Endpoints da API (Rotas REST)](./academic/01-arquitetura/05-endpoints-api.md)
+* [06. Tecnologias Sugeridas](./academic/01-arquitetura/06-tecnologias.md)
+* [07. Fluxos Principais](./academic/01-arquitetura/07-fluxos-principais.md)
 
 ---
 
