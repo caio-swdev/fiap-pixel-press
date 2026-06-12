@@ -27,7 +27,7 @@ fiap-pixel-press/
 # 🚀 Rodar o projeto
 
 Demo de baixa infraestrutura: **sem Docker**. Banco **SQLite em arquivo** e **cache in-process**
-(desvios conscientes de `academic/context/`, ver relatório). O catálogo é a **RAWG real**.
+(desvios conscientes de `.ai/`, ver relatório). O catálogo é a **RAWG real**.
 
 ## Pré-requisitos
 
@@ -124,7 +124,7 @@ Erros no envelope `{ "error": { "code", "message", "details" } }`. Módulos `lis
 
 # 📚 Documentação de domínio
 
-A pasta [`academic/context/`](./academic/context) é a fonte de verdade técnica (standards, architecture,
+A pasta [`.ai/`](./.ai) é a fonte de verdade técnica (standards, architecture,
 tech-stack, business-rules). Os documentos originais de domínio:
 
 * [01. Funcionalidades Principais](./academic/01-arquitetura/01-funcionalidades-principais.md)
