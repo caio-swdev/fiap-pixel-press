@@ -29,10 +29,12 @@ services:
     # both build and start commands.
     rootDir: src
 
-    # Build: install all workspace deps, generate Prisma client, compile NestJS.
-    # pnpm --filter targets the package by its "name" field in package.json.
+    # Build: provision pnpm via corepack (Render's global npm dir is read-only,
+    # so `npm install -g pnpm` fails with EROFS), install workspace deps,
+    # generate Prisma client, compile NestJS.
     buildCommand: >-
-      npm install -g pnpm &&
+      corepack enable &&
+      corepack prepare pnpm@10.8.1 --activate &&
       pnpm install --frozen-lockfile &&
       pnpm --filter pixelpress-backend exec prisma generate &&
       pnpm --filter pixelpress-backend run build
@@ -91,16 +93,21 @@ services:
     name: pixelpress-web
     runtime: static
 
-    rootDir: src/web
+    # rootDir = workspace root (src) so pnpm resolves the lockfile and workspace
+    # correctly; the --filter targets the web package by its package.json name.
+    rootDir: src
 
-    # Build: install deps + Vite build (tsc + vite build per package.json scripts).
+    # Build: provision pnpm via corepack (read-only global dir → no `npm i -g`),
+    # install workspace deps, Vite build (tsc + vite build per package.json scripts).
     # VITE_API_BASE_URL is baked at build time — must be set before this runs.
     buildCommand: >-
-      npm install -g pnpm &&
+      corepack enable &&
+      corepack prepare pnpm@10.8.1 --activate &&
       pnpm install --frozen-lockfile &&
-      pnpm run build
+      pnpm --filter pixelpress-frontend run build
 
-    staticPublishPath: dist
+    # Build output is src/web/dist; relative to rootDir (src) that is web/dist.
+    staticPublishPath: web/dist
 
     # SPA rewrite: all routes return index.html so React Router handles navigation.
     routes:

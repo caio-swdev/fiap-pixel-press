@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #08070C; font-family: 'Space Grotesk', system-ui, sans-serif; }
+  ::selection { background: rgba(168,85,247,0.35); color: #fff; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 8px; border: 2px solid #08070C; }
+  @keyframes pp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes pp-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes pp-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pp-glow { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:#08070C; color:#F2F0F7; font-family:'Space Grotesk',system-ui,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;">
+
+  <!-- version switcher -->
+  <div style="position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:100; display:flex; gap:5px; padding:5px; background:rgba(16,14,23,0.92); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.1); border-radius:40px; box-shadow:0 16px 40px -12px rgba(0,0,0,0.7);">
+    <sc-for list="{{ versionTabs }}" as="v" hint-placeholder-count="2">
+      <button onClick="{{ v.select }}" style="padding:9px 18px; border:none; border-radius:30px; background:{{ v.bg }}; color:{{ v.fg }}; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .18s; white-space:nowrap;">{{ v.label }}</button>
+    </sc-for>
+  </div>
+
+  <!-- ============================== VERSION A: EDITORIAL ============================== -->
+  <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+  <div style="animation:pp-rise .4s ease both;">
+    <!-- nav -->
+    <nav style="position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:18px 6vw; background:rgba(8,7,12,0.8); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <div style="width:32px; height:32px; border-radius:9px; background:linear-gradient(140deg,#A855F7,#5b1f86); display:grid; place-items:center; box-shadow:0 10px 26px -10px rgba(168,85,247,0.7);"><div style="width:12px; height:12px; background:#fff; border-radius:2px;"></div></div>
+        <span style="font-size:17px; font-weight:700; letter-spacing:-0.02em;">PIXEL<span style="color:#A855F7;">PRESS</span></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:30px; font-size:14px; color:#9890AB;">
+        <span style="cursor:pointer;" style-hover="color:#F2F0F7;">Descobrir</span>
+        <span style="cursor:pointer;" style-hover="color:#F2F0F7;">Listas</span>
+        <span style="cursor:pointer;" style-hover="color:#F2F0F7;">Comunidade</span>
+        <span style="color:#F2F0F7; cursor:pointer; font-weight:500;">Entrar</span>
+        <button style="padding:9px 18px; background:#A855F7; border:none; border-radius:10px; color:#0b0911; font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer;">Criar conta</button>
+      </div>
+    </nav>
+
+    <!-- hero -->
+    <section style="display:grid; grid-template-columns:1.05fr 0.95fr; gap:40px; align-items:center; padding:70px 6vw 80px; max-width:1320px; margin:0 auto;">
+      <div>
+        <div style="display:inline-flex; align-items:center; gap:9px; padding:7px 14px; background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.28); border-radius:30px; font-size:12.5px; color:#C77DFF; font-weight:500;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#A855F7; box-shadow:0 0 8px #A855F7;"></span> O diário dos seus games
+        </div>
+        <h1 style="margin:22px 0 0; font-size:clamp(40px,5vw,64px); font-weight:700; line-height:1.02; letter-spacing:-0.035em; text-wrap:balance;">Todo jogo que você jogou, <span style="background:linear-gradient(110deg,#A855F7,#34E5FF); -webkit-background-clip:text; background-clip:text; color:transparent;">num só lugar.</span></h1>
+        <p style="margin:22px 0 0; font-size:17.5px; line-height:1.6; color:#9890AB; max-width:480px; text-wrap:pretty;">Catalogue, avalie e descubra games num catálogo de +800 mil títulos. Marque o que está jogando, dê notas, monte listas e acompanhe lançamentos.</p>
+        <div style="display:flex; gap:13px; margin-top:32px; flex-wrap:wrap;">
+          <button style="padding:14px 26px; background:#A855F7; border:none; border-radius:12px; color:#0b0911; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 14px 34px -12px rgba(168,85,247,0.7);">Começar grátis</button>
+          <button style="display:flex; align-items:center; gap:9px; padding:14px 22px; background:#16131F; border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#F2F0F7; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer;">▶ Ver demo</button>
+        </div>
+        <div style="display:flex; gap:34px; margin-top:42px;">
+          <sc-for list="{{ heroStats }}" as="s" hint-placeholder-count="3">
+            <div>
+              <div style="font-size:25px; font-weight:700; letter-spacing:-0.02em;">{{ s.num }}</div>
+              <div style="font-size:12.5px; color:#615A75; margin-top:3px;">{{ s.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <!-- showcase -->
+      <div style="position:relative; height:480px; perspective:1400px;">
+        <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; transform:rotateY(-18deg) rotateX(6deg) rotateZ(2deg); transform-style:preserve-3d;">
+          <sc-for list="{{ showcase }}" as="c" hint-placeholder-count="6">
+            <div style="aspect-ratio:3/4; border-radius:13px; background:{{ c.cover }}; box-shadow:0 24px 50px -18px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; animation:pp-float {{ c.dur }}s ease-in-out infinite; animation-delay:{{ c.delay }}s; display:flex; align-items:flex-end; padding:10px;">
+              <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(0deg,rgba(0,0,0,0.16) 0,rgba(0,0,0,0.16) 1px,transparent 1px,transparent 4px); mix-blend-mode:overlay;"></div>
+              <span style="position:relative; font-size:12px; font-weight:700; text-shadow:0 2px 10px rgba(0,0,0,0.7); line-height:1.05;">{{ c.title }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- platforms strip -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:30px; padding:24px 6vw; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap;">
+      <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; color:#615A75;">CATÁLOGO DE TODAS AS PLATAFORMAS</span>
+      <sc-for list="{{ platforms }}" as="p" hint-placeholder-count="5">
+        <span style="font-family:'Space Mono',monospace; font-size:14px; font-weight:700; color:#9890AB; letter-spacing:0.04em;">{{ p }}</span>
+      </sc-for>
+    </div>
+
+    <!-- features -->
+    <section style="padding:90px 6vw; max-width:1280px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:54px;">
+        <div style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.2em; color:#A855F7;">RECURSOS</div>
+        <h2 style="margin:14px 0 0; font-size:clamp(30px,3.5vw,42px); font-weight:700; letter-spacing:-0.03em;">Tudo que um jogador-arquivista precisa</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px;">
+        <sc-for list="{{ featuresA }}" as="f" hint-placeholder-count="4">
+          <div style="background:#100E17; border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:28px 24px; transition:border-color .2s, transform .2s;" style-hover="border-color:rgba(168,85,247,0.3); transform:translateY(-4px);">
+            <div style="width:46px; height:46px; border-radius:12px; background:{{ f.iconBg }}; display:grid; place-items:center; font-size:20px;">{{ f.icon }}</div>
+            <h3 style="margin:20px 0 0; font-size:18px; font-weight:700; letter-spacing:-0.01em;">{{ f.title }}</h3>
+            <p style="margin:10px 0 0; font-size:14.5px; line-height:1.55; color:#9890AB; text-wrap:pretty;">{{ f.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- how it works -->
+    <section style="padding:30px 6vw 90px; max-width:1100px; margin:0 auto;">
+      <div style="background:linear-gradient(160deg,#15121F,#0c0a12); border:1px solid rgba(255,255,255,0.07); border-radius:24px; padding:52px 48px;">
+        <h2 style="margin:0 0 44px; font-size:clamp(26px,3vw,36px); font-weight:700; letter-spacing:-0.03em; text-align:center;">Comece em 3 passos</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:34px;">
+          <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:#0b0911; width:34px; height:34px; border-radius:9px; background:#A855F7; display:grid; place-items:center;">{{ s.n }}</div>
+              <h3 style="margin:0; font-size:17px; font-weight:600;">{{ s.title }}</h3>
+              <p style="margin:0; font-size:14px; line-height:1.55; color:#9890AB;">{{ s.body }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <!-- big CTA -->
+    <section style="padding:40px 6vw 100px; text-align:center; max-width:760px; margin:0 auto;">
+      <h2 style="margin:0; font-size:clamp(32px,4.5vw,52px); font-weight:700; letter-spacing:-0.035em; line-height:1.05;">Pronto para catalogar<br>sua coleção?</h2>
+      <p style="margin:18px 0 0; font-size:16px; color:#9890AB;">Grátis para sempre. Sem cartão de crédito.</p>
+      <button style="margin-top:30px; padding:16px 34px; background:#A855F7; border:none; border-radius:13px; color:#0b0911; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 16px 40px -12px rgba(168,85,247,0.7);">Criar minha conta</button>
+    </section>
+
+    <footer style="border-top:1px solid rgba(255,255,255,0.06); padding:34px 6vw; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <span style="font-size:14px; font-weight:700;">PIXEL<span style="color:#A855F7;">PRESS</span></span>
+      <span style="font-family:'Space Mono',monospace; font-size:11px; color:#615A75;">Dados de jogos via RAWG API · © 2026</span>
+    </footer>
+  </div>
+  </sc-if>
+
+  <!-- ============================== VERSION B: ARCADE NEON ============================== -->
+  <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+  <div style="animation:pp-rise .4s ease both;">
+    <!-- ticker -->
+    <div style="overflow:hidden; border-bottom:1px solid rgba(255,255,255,0.07); background:#0b0910; padding:9px 0;">
+      <div style="display:flex; gap:0; width:max-content; animation:pp-marquee 28s linear infinite;">
+        <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="14">
+          <span style="display:inline-flex; align-items:center; gap:14px; padding:0 18px; font-family:'Space Mono',monospace; font-size:12px; color:#9890AB; white-space:nowrap;">{{ t }}<span style="color:#FF3D8B;">◆</span></span>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- nav -->
+    <nav style="display:flex; align-items:center; justify-content:space-between; padding:18px 6vw;">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(140deg,#FF3D8B,#A855F7); display:grid; place-items:center; box-shadow:0 0 24px -4px rgba(255,61,139,0.7);"><div style="width:12px; height:12px; background:#fff; border-radius:2px;"></div></div>
+        <span style="font-size:17px; font-weight:700; letter-spacing:-0.02em;">PIXEL<span style="color:#FF3D8B;">PRESS</span></span>
+      </div>
+      <button style="padding:9px 20px; background:transparent; border:1px solid #FF3D8B; border-radius:9px; color:#FF3D8B; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer;" style-hover="background:#FF3D8B; color:#0b0911;">ENTRAR ▸</button>
+    </nav>
+
+    <!-- hero -->
+    <section style="text-align:center; padding:64px 6vw 50px; position:relative;">
+      <div style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:620px; max-width:90vw; height:340px; background:radial-gradient(circle, rgba(168,85,247,0.28), transparent 65%); filter:blur(28px); animation:pp-glow 4s ease-in-out infinite; pointer-events:none;"></div>
+      <div style="position:relative;">
+        <div style="display:inline-flex; align-items:center; gap:8px; padding:7px 15px; border:1px solid rgba(255,61,139,0.35); border-radius:30px; font-family:'Space Mono',monospace; font-size:11.5px; letter-spacing:0.14em; color:#FF6FA8; background:rgba(255,61,139,0.08);">★ SEU BACKLOG, ORGANIZADO</div>
+        <h1 style="margin:26px auto 0; font-size:clamp(46px,8vw,104px); font-weight:700; line-height:0.92; letter-spacing:-0.04em; max-width:14ch;">DÊ PLAY NA SUA <span style="color:#FF3D8B; text-shadow:0 0 36px rgba(255,61,139,0.6);">COLEÇÃO.</span></h1>
+        <p style="margin:26px auto 0; font-size:18px; line-height:1.55; color:#9890AB; max-width:540px; text-wrap:pretty;">Track, avalie e descubra games num catálogo gigante. Estilo Letterboxd — mas pra quem zera fase, não filme.</p>
+        <div style="display:flex; gap:13px; justify-content:center; margin-top:34px; flex-wrap:wrap;">
+          <button style="padding:15px 30px; background:linear-gradient(120deg,#FF3D8B,#A855F7); border:none; border-radius:10px; color:#fff; font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 16px 40px -12px rgba(255,61,139,0.7); letter-spacing:0.02em;">CRIAR CONTA GRÁTIS</button>
+          <button style="padding:15px 26px; background:#16131F; border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:#F2F0F7; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer;">Explorar catálogo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- cover row -->
+    <div style="overflow:hidden; padding:30px 0 70px; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);">
+      <div style="display:flex; gap:18px; width:max-content; animation:pp-marquee 40s linear infinite;">
+        <sc-for list="{{ coverRow }}" as="c" hint-placeholder-count="16">
+          <div style="width:160px; aspect-ratio:3/4; border-radius:10px; background:{{ c.cover }}; border:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:11px; flex:0 0 auto;">
+            <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(0deg,rgba(0,0,0,0.16) 0,rgba(0,0,0,0.16) 1px,transparent 1px,transparent 4px); mix-blend-mode:overlay;"></div>
+            <span style="position:relative; font-size:13px; font-weight:700; text-shadow:0 2px 10px rgba(0,0,0,0.7); line-height:1.05;">{{ c.title }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- bento features -->
+    <section style="padding:20px 6vw 80px; max-width:1240px; margin:0 auto;">
+      <h2 style="margin:0 0 36px; font-size:clamp(28px,3.5vw,44px); font-weight:700; letter-spacing:-0.03em; text-align:center;">Feito pra quem leva game <span style="color:#34E5FF;">a sério</span>.</h2>
+      <div style="display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:185px; gap:16px;">
+        <!-- big -->
+        <div style="grid-column:span 4; grid-row:span 2; background:linear-gradient(150deg,#1a1019,#0d0a11); border:1px solid rgba(255,61,139,0.18); border-radius:20px; padding:32px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;">
+          <div style="position:absolute; top:-40px; right:-30px; width:240px; height:240px; background:radial-gradient(circle,rgba(255,61,139,0.22),transparent 70%); filter:blur(10px);"></div>
+          <div style="position:relative;">
+            <div style="font-size:30px;">🎮</div>
+            <h3 style="margin:16px 0 0; font-size:24px; font-weight:700; letter-spacing:-0.02em;">Biblioteca com status</h3>
+            <p style="margin:10px 0 0; font-size:15px; line-height:1.55; color:#b8b0c6; max-width:380px;">Jogando, zerado, platinado, dropei, quero jogar. Cada jogo no slot certo — e estatísticas automáticas do seu perfil.</p>
+          </div>
+        </div>
+        <div style="grid-column:span 2; grid-row:span 1; background:#130e15; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:24px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="font-size:24px;">★</div>
+          <div><h3 style="margin:0; font-size:17px; font-weight:700;">Notas 0–10</h3><p style="margin:7px 0 0; font-size:13.5px; color:#9890AB; line-height:1.5;">Reviews com aviso de spoiler.</p></div>
+        </div>
+        <div style="grid-column:span 2; grid-row:span 1; background:#130e15; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:24px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div style="font-size:24px;">🔔</div>
+          <div><h3 style="margin:0; font-size:17px; font-weight:700;">Wishlist + alertas</h3><p style="margin:7px 0 0; font-size:13.5px; color:#9890AB; line-height:1.5;">Avisos quando o lançamento chega.</p></div>
+        </div>
+        <div style="grid-column:span 3; grid-row:span 1; background:#130e15; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:24px; display:flex; align-items:center; gap:18px;">
+          <div style="font-size:26px;">📚</div>
+          <div><h3 style="margin:0; font-size:17px; font-weight:700;">Listas customizadas</h3><p style="margin:7px 0 0; font-size:13.5px; color:#9890AB; line-height:1.5;">"RPGs de 2025", "pra zerar nas férias"…</p></div>
+        </div>
+        <div style="grid-column:span 3; grid-row:span 1; background:#130e15; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:24px; display:flex; align-items:center; gap:18px;">
+          <div style="font-size:26px;">⚡</div>
+          <div><h3 style="margin:0; font-size:17px; font-weight:700;">Recomendações</h3><p style="margin:7px 0 0; font-size:13.5px; color:#9890AB; line-height:1.5;">Baseadas na sua biblioteca e gêneros.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- neon counters -->
+    <section style="padding:20px 6vw 90px; max-width:1000px; margin:0 auto;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px;">
+        <sc-for list="{{ counters }}" as="c" hint-placeholder-count="3">
+          <div style="text-align:center; padding:30px 18px; border:1px solid {{ c.border }}; border-radius:18px; background:#0e0b13;">
+            <div style="font-size:42px; font-weight:700; letter-spacing:-0.03em; color:{{ c.color }}; text-shadow:0 0 26px {{ c.glow }};">{{ c.num }}</div>
+            <div style="font-size:13px; color:#9890AB; margin-top:8px;">{{ c.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="text-align:center; padding:30px 6vw 110px; position:relative;">
+      <div style="position:absolute; inset:0; background:radial-gradient(circle at 50% 40%, rgba(255,61,139,0.14), transparent 60%); pointer-events:none;"></div>
+      <div style="position:relative;">
+        <h2 style="margin:0; font-size:clamp(34px,5vw,58px); font-weight:700; letter-spacing:-0.035em; line-height:1.02;">INSIRA A FICHA.<br><span style="color:#34E5FF;">COMECE AGORA.</span></h2>
+        <button style="margin-top:30px; padding:17px 40px; background:linear-gradient(120deg,#FF3D8B,#A855F7); border:none; border-radius:11px; color:#fff; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 18px 44px -12px rgba(255,61,139,0.7); letter-spacing:0.03em;">JOGAR GRÁTIS ▸</button>
+      </div>
+    </section>
+
+    <footer style="border-top:1px solid rgba(255,255,255,0.06); padding:30px 6vw; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <span style="font-size:14px; font-weight:700;">PIXEL<span style="color:#FF3D8B;">PRESS</span></span>
+      <span style="font-family:'Space Mono',monospace; font-size:11px; color:#615A75;">Dados de jogos via RAWG API · © 2026</span>
+    </footer>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { version: 'A' };
+    this.GAMES = [
+      { t:'Elden Ring', hue:280 }, { t:'Hades', hue:18 }, { t:'Hollow Knight', hue:200 },
+      { t:'Celeste', hue:330 }, { t:"Baldur's Gate 3", hue:35 }, { t:'Stardew Valley', hue:120 },
+      { t:'Disco Elysium', hue:160 }, { t:'Cyberpunk 2077', hue:300 }, { t:'Sekiro', hue:10 },
+      { t:'Balatro', hue:345 }, { t:'Pizza Tower', hue:5 }, { t:'Tunic', hue:95 },
+      { t:'The Witcher 3', hue:48 }, { t:'Returnal', hue:290 }, { t:'Cuphead', hue:40 },
+      { t:'Outer Wilds', hue:255 },
+    ];
+  }
+
+  cover(hue) {
+    return `radial-gradient(125% 120% at 22% 8%, hsl(${hue} 78% 52%), hsl(${(hue+34)%360} 62% 30%) 46%, hsl(${(hue+18)%360} 55% 11%) 100%)`;
+  }
+
+  renderVals() {
+    const v = this.state.version;
+    const versionTabs = [
+      { label:'Versão A · Editorial', key:'A' },
+      { label:'Versão B · Arcade', key:'B' },
+    ].map(t => ({
+      label:t.label,
+      bg: v===t.key ? 'linear-gradient(120deg,#A855F7,#FF3D8B)' : 'transparent',
+      fg: v===t.key ? '#fff' : '#9890AB',
+      select: () => this.setState({ version:t.key }),
+    }));
+
+    const showcase = this.GAMES.slice(0,6).map((g,i)=>({
+      cover:this.cover(g.hue), title:g.t,
+      dur:(3.4+i*0.3).toFixed(1), delay:(i*0.25).toFixed(2),
+    }));
+
+    const coverRow = this.GAMES.concat(this.GAMES).map(g=>({ cover:this.cover(g.hue), title:g.t }));
+    const ticker = this.GAMES.map(g=>g.t).concat(this.GAMES.map(g=>g.t));
+
+    return {
+      isA: v==='A', isB: v==='B', versionTabs,
+
+      // version A
+      heroStats: [
+        { num:'800k+', label:'jogos no catálogo' },
+        { num:'5', label:'status de tracking' },
+        { num:'RAWG', label:'base de dados' },
+      ],
+      showcase,
+      platforms: ['PC','PS5','XBOX','SWITCH','MOBILE'],
+      featuresA: [
+        { icon:'🎮', iconBg:'rgba(91,140,255,0.16)', title:'Biblioteca pessoal', body:'Marque cada jogo como jogando, zerado, platinado, dropei ou quero jogar.' },
+        { icon:'★', iconBg:'rgba(245,196,81,0.16)', title:'Avaliações & reviews', body:'Notas de 0 a 10 e texto livre, com opção de marcar como spoiler.' },
+        { icon:'📚', iconBg:'rgba(168,85,247,0.16)', title:'Listas & wishlist', body:'Monte coleções temáticas e receba alerta quando o lançamento chega.' },
+        { icon:'📊', iconBg:'rgba(61,220,132,0.16)', title:'Perfil com estatísticas', body:'Gêneros mais jogados, top estúdios e gráfico de atividade.' },
+      ],
+      steps: [
+        { n:'1', title:'Busque no catálogo', body:'Encontre qualquer jogo por nome, gênero, plataforma ou tag.' },
+        { n:'2', title:'Adicione à biblioteca', body:'Defina o status e organize seu backlog em segundos.' },
+        { n:'3', title:'Avalie e compartilhe', body:'Dê sua nota, escreva reviews e siga outros jogadores.' },
+      ],
+
+      // version B
+      ticker, coverRow,
+      counters: [
+        { num:'800k+', label:'jogos catalogados', color:'#FF3D8B', glow:'rgba(255,61,139,0.5)', border:'rgba(255,61,139,0.2)' },
+        { num:'0', label:'reais pra começar', color:'#34E5FF', glow:'rgba(52,229,255,0.5)', border:'rgba(52,229,255,0.2)' },
+        { num:'∞', label:'listas que dá pra criar', color:'#A855F7', glow:'rgba(168,85,247,0.5)', border:'rgba(168,85,247,0.2)' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
