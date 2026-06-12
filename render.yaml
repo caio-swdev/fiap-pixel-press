@@ -1,0 +1,117 @@
+# render.yaml — Render Blueprint Spec
+# PixelPress full-stack deploy: NestJS API (web service) + React SPA (static site)
+#
+# IMPORTANT: This is a $0 free-tier Blueprint. Trade-offs:
+#   - API cold start ~50s after 15 min idle (free web service spins down).
+#   - Ephemeral filesystem: SQLite dev.db is wiped on every restart/redeploy.
+#     The startCommand runs db:push + db:seed on each boot — runtime data is NOT persisted.
+#   - VITE_API_BASE_URL is hardcoded below because Render cannot inject fromService vars at
+#     static-site BUILD time (Vite bakes env vars at build). See deployment runbook for the
+#     manual two-step if the API URL ever changes.
+#
+# Secrets (sync: false) — set these in the Render Dashboard before first deploy:
+#   JWT_SECRET       : long random string (min 32 chars)
+#   RAWG_API_KEY     : free key from https://rawg.io/apidocs
+#                      (or keep USE_RAWG_MOCK=true for offline demo)
+#
+# Deploy order: pixelpress-api must deploy successfully first so Swagger/health route
+# is reachable, then pixelpress-web (static site build bakes in the API URL).
+
+services:
+  # ── Backend: NestJS API ─────────────────────────────────────────────────────
+  - type: web
+    name: pixelpress-api
+    runtime: node
+    plan: free
+    region: oregon
+
+    # Root of the pnpm workspace. Render sets this as the working directory for
+    # both build and start commands.
+    rootDir: src
+
+    # Build: install all workspace deps, generate Prisma client, compile NestJS.
+    # pnpm --filter targets the package by its "name" field in package.json.
+    buildCommand: >-
+      npm install -g pnpm &&
+      pnpm install --frozen-lockfile &&
+      pnpm --filter pixelpress-backend exec prisma generate &&
+      pnpm --filter pixelpress-backend run build
+
+    # Start: push schema (creates/migrates dev.db), seed, then run compiled JS.
+    # Working dir at this point is rootDir (src/), so relative paths are from there.
+    startCommand: >-
+      cd api &&
+      npx prisma db push --skip-generate &&
+      npx prisma db seed &&
+      node dist/main.js
+
+    healthCheckPath: /api/v1/games
+
+    envVars:
+      # SQLite file path inside the running container (ephemeral — wiped on restart).
+      - key: DATABASE_URL
+        value: file:./prisma/dev.db
+
+      - key: NODE_ENV
+        value: production
+
+      # JWT_SECRET — set in Render Dashboard (sync: false = never committed).
+      - key: JWT_SECRET
+        sync: false
+
+      - key: JWT_EXPIRATION
+        value: 3600s
+
+      - key: JWT_REFRESH_EXPIRATION
+        value: 7d
+
+      # RAWG integration — either provide a real key OR keep USE_RAWG_MOCK=true.
+      - key: RAWG_API_KEY
+        sync: false
+
+      - key: RAWG_BASE_URL
+        value: https://api.rawg.io/api
+
+      - key: RAWG_CACHE_TTL_SECONDS
+        value: "300"
+
+      # Set to "true" to use local fixture data instead of hitting the real RAWG API.
+      # Useful for demos with no RAWG key. Change to "false" once RAWG_API_KEY is set.
+      - key: USE_RAWG_MOCK
+        value: "true"
+
+      # CORS: allow requests from the static site. Update if the frontend URL changes.
+      - key: CORS_ORIGIN
+        value: https://pixelpress-web.onrender.com
+
+      # PORT is injected by Render automatically — do NOT override here.
+
+  # ── Frontend: React SPA (static site) ──────────────────────────────────────
+  - type: web
+    name: pixelpress-web
+    runtime: static
+    plan: free
+    region: oregon
+
+    rootDir: src/web
+
+    # Build: install deps + Vite build (tsc + vite build per package.json scripts).
+    # VITE_API_BASE_URL is baked at build time — must be set before this runs.
+    buildCommand: >-
+      npm install -g pnpm &&
+      pnpm install --frozen-lockfile &&
+      pnpm run build
+
+    staticPublishPath: dist
+
+    # SPA rewrite: all routes return index.html so React Router handles navigation.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    envVars:
+      # Vite bakes this at BUILD time. Points to the Render API service URL.
+      # NOTE: If you rename the API service, update this value and redeploy the frontend.
+      - key: VITE_API_BASE_URL
+        value: https://pixelpress-api.onrender.com/api/v1

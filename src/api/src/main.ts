@@ -11,6 +11,11 @@ async function bootstrap(): Promise<void> {
   app.useLogger(app.get(Logger));
   app.setGlobalPrefix('api/v1');
 
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',') ?? true,
+    credentials: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
