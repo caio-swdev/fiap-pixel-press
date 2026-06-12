@@ -2,15 +2,30 @@
 
 Plataforma de gerenciamento e descoberta de jogos utilizando a API da RAWG.io como fonte principal de dados.
 
-> **atividade-2 — MVP backend executável.** O backend NestJS está implementado na raiz (`src/` + `prisma/`).
-> Guia de execução abaixo. Relatório da entrega em [`RELATORIO-MVP.md`](./RELATORIO-MVP.md).
+> **MVP executável — monorepo pnpm.** Todo o código vive em [`src/`](./src): `src/api` (backend NestJS)
+> e `src/web` (frontend React/Vite). Documentação e relatórios em [`docs/`](./docs).
+> Guia de execução abaixo. Relatório da entrega em [`docs/RELATORIO-MVP.md`](./docs/RELATORIO-MVP.md).
 
 ---
 
-# 🚀 Rodar o backend (MVP)
+# 🗂️ Estrutura
+
+```
+fiap-pixel-press/
+├── src/                  # workspace pnpm (todo o código)
+│   ├── api/              # backend NestJS + Prisma (SQLite)
+│   ├── web/              # frontend React + Vite + Tailwind
+│   ├── package.json      # raiz do workspace (scripts dev:api / dev:web)
+│   └── pnpm-workspace.yaml
+└── docs/                 # arquitetura, relatórios, prompts de agentes
+```
+
+---
+
+# 🚀 Rodar o projeto
 
 Demo de baixa infraestrutura: **sem Docker**. Banco **SQLite em arquivo** e **cache in-process**
-(desvios conscientes do `.ai/`, ver relatório). O catálogo é a **RAWG real**.
+(desvios conscientes de `docs/context/`, ver relatório). O catálogo é a **RAWG real**.
 
 ## Pré-requisitos
 
@@ -21,26 +36,37 @@ Demo de baixa infraestrutura: **sem Docker**. Banco **SQLite em arquivo** e **ca
 
 1. Crie conta em <https://rawg.io/login>
 2. Em <https://rawg.io/apidocs> gere sua **API key** (plano gratuito: 100 req/dia)
-3. Cole em `RAWG_API_KEY` no `.env`
+3. Cole em `RAWG_API_KEY` no `src/api/.env`
 
-## Passo a passo (Definition of Done)
+## Passo a passo
+
+Todos os comandos rodam a partir de **`src/`** (raiz do workspace):
 
 ```bash
-cp .env.example .env          # preencha RAWG_API_KEY (DATABASE_URL já vem default)
-pnpm install
-pnpm db:reset                 # cria prisma/dev.db, aplica o schema e roda o seed
-pnpm start:dev                # sobe a API (o prestart já garante db+seed)
+cd src
+cp api/.env.example api/.env   # preencha RAWG_API_KEY (DATABASE_URL já vem default)
+pnpm install                   # instala api + web (um único lockfile)
+pnpm db:reset                  # cria api/prisma/dev.db, aplica o schema e roda o seed
+
+# em dois terminais (ou use o & no fim):
+pnpm dev:api                   # sobe a API   → http://localhost:3000
+pnpm dev:web                   # sobe a SPA   → http://localhost:5173
 ```
 
+- **App (SPA):** <http://localhost:5173/> ← abra aqui (faz proxy de `/api` → backend)
 - API: <http://localhost:3000/api/v1>
 - Swagger: <http://localhost:3000/api/docs>
 
-> `prestart:dev` roda `prisma generate && prisma db push && prisma db seed`, garantindo banco
-> populado a cada boot. O `dev.db` é **efêmero** (gitignored) e recriado via `db:reset`; toda a
-> massa de demo vem do **seed**.
+> O `dev:api` (`start:dev`) roda `prisma generate && prisma db push && prisma db seed` no prestart,
+> garantindo banco populado a cada boot. O `dev.db` é **efêmero** (gitignored) e recriado via
+> `db:reset`; toda a massa de demo vem do **seed**.
 >
-> **Porta:** default `3000`. Conflito? Use `PORT=3100 pnpm start:dev` (em WSL2 o lado Windows pode
-> reservar a 3000).
+> **Portas:** API default `3000`, SPA `5173`. Conflito (em WSL2 o lado Windows pode reservar a 3000)?
+> Suba a API noutra porta e aponte o proxy do Vite para ela:
+> ```bash
+> PORT=3001 pnpm dev:api
+> VITE_PROXY_TARGET=http://localhost:3001 pnpm dev:web
+> ```
 
 ## Catálogo real vs. fallback offline
 
@@ -48,7 +74,7 @@ Padrão: **RAWG real** (`USE_RAWG_MOCK=false`). Toda leitura de catálogo passa 
 in-process** (TTL `RAWG_CACHE_TTL_SECONDS`) antes de chamar a RAWG, respeitando o rate limit.
 
 Demo **offline** (sem internet/chave): no `.env`, `USE_RAWG_MOCK=true`. O `MockRawgClient` serve a
-fixture local `src/jogos/rawg/jogos.fixture.json` (~12 jogos reais da RAWG).
+fixture local `src/api/src/jogos/rawg/jogos.fixture.json` (~12 jogos reais da RAWG).
 
 ## Credenciais do seed
 
@@ -80,29 +106,30 @@ Seed cria ainda 4 jogos, 2 itens de biblioteca, 2 reviews e **1 denúncia penden
 Erros no envelope `{ "error": { "code", "message", "details" } }`. Módulos `listas/`, `social/`,
 `wishlist/` ficam declarados mas vazios (fora do MVP).
 
-## Scripts
+## Scripts (a partir de `src/`)
 
 | # | Script | Ação |
 |---|--------|------|
-| 1 | `pnpm start:dev` | Sobe a API em watch (db+seed no prestart) |
-| 2 | `pnpm build` | Compila para `dist/` |
-| 3 | `pnpm db:reset` | Apaga `dev.db`, recria o schema e roda o seed |
-| 4 | `pnpm db:seed` | Roda o seed (idempotente) |
+| 1 | `pnpm dev:api` | Sobe a API em watch (db+seed no prestart) → :3000 |
+| 2 | `pnpm dev:web` | Sobe a SPA em watch (Vite) → :5173 |
+| 3 | `pnpm build` | Compila api + web (`-r build`) |
+| 4 | `pnpm db:reset` | Apaga `dev.db`, recria o schema e roda o seed |
+| 5 | `pnpm db:seed` | Roda o seed (idempotente) |
 
 ---
 
 # 📚 Documentação de domínio
 
-A pasta `.ai/` é a fonte de verdade técnica (standards, architecture, tech-stack, business-rules).
-Os documentos originais de domínio:
+A pasta [`docs/context/`](./docs/context) é a fonte de verdade técnica (standards, architecture,
+tech-stack, business-rules). Os documentos originais de domínio:
 
-* [01. Funcionalidades Principais](./1-Arquitetura/01-funcionalidades-principais.md)
-* [02. Tipos de Usuários e Permissões](./1-Arquitetura/02-usuarios-permissoes.md)
-* [03. Diagrama de Arquitetura (Camadas)](./1-Arquitetura/03-arquitetura-camadas.md)
-* [04. Entidades Principais e Relacionamentos](./1-Arquitetura/04-entidades-relacionamentos.md)
-* [05. Endpoints da API (Rotas REST)](./1-Arquitetura/05-endpoints-api.md)
-* [06. Tecnologias Sugeridas](./1-Arquitetura/06-tecnologias.md)
-* [07. Fluxos Principais](./1-Arquitetura/07-fluxos-principais.md)
+* [01. Funcionalidades Principais](./docs/01-arquitetura/01-funcionalidades-principais.md)
+* [02. Tipos de Usuários e Permissões](./docs/01-arquitetura/02-usuarios-permissoes.md)
+* [03. Diagrama de Arquitetura (Camadas)](./docs/01-arquitetura/03-arquitetura-camadas.md)
+* [04. Entidades Principais e Relacionamentos](./docs/01-arquitetura/04-entidades-relacionamentos.md)
+* [05. Endpoints da API (Rotas REST)](./docs/01-arquitetura/05-endpoints-api.md)
+* [06. Tecnologias Sugeridas](./docs/01-arquitetura/06-tecnologias.md)
+* [07. Fluxos Principais](./docs/01-arquitetura/07-fluxos-principais.md)
 
 ---
 
