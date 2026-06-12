@@ -23,7 +23,7 @@ export function AppShell() {
 
   function logout() {
     sair();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   }
 
   return (
