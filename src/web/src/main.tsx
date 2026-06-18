@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './App';
 import { SessionProvider } from './auth/session';
 import { ToastViewport } from './components/ui/Toast';
+import { WarmupOverlay } from './components/ui/WarmupOverlay';
 import './index.css';
 
 // Erros já são tratados centralmente no interceptor do axios (toast).
@@ -30,6 +31,7 @@ createRoot(root).render(
         <SessionProvider>
           <App />
           <ToastViewport />
+          <WarmupOverlay />
         </SessionProvider>
       </BrowserRouter>
     </QueryClientProvider>

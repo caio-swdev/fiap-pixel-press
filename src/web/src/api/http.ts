@@ -15,6 +15,7 @@ import axios, {
 import { sessionStore } from './session-store';
 import { ApiError, normalizarErro } from './errors';
 import { toastBus } from '../lib/toast-bus';
+import { warmupBus, WARMUP_THRESHOLD_MS } from '../lib/warmup-bus';
 import type { RespostaAuth } from './types';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';
@@ -30,6 +31,31 @@ declare module 'axios' {
 interface ConfigEstendida extends InternalAxiosRequestConfig {
   silent?: boolean;
   _jaTentouRefresh?: boolean;
+  _warmupTimer?: ReturnType<typeof setTimeout>;
+  _warmupLento?: boolean;
+}
+
+// ── Detecção de cold start (Render free) ────────────────────────────────────
+// Quantas chamadas estão pendentes há mais de WARMUP_THRESHOLD_MS. Enquanto > 0
+// o overlay de "acordando o servidor" fica visível.
+let chamadasLentas = 0;
+
+function armarWarmup(config: ConfigEstendida): void {
+  config._warmupTimer = setTimeout(() => {
+    config._warmupLento = true;
+    chamadasLentas += 1;
+    warmupBus.mostrar();
+  }, WARMUP_THRESHOLD_MS);
+}
+
+function desarmarWarmup(config?: ConfigEstendida): void {
+  if (!config) return;
+  if (config._warmupTimer) clearTimeout(config._warmupTimer);
+  if (config._warmupLento) {
+    config._warmupLento = false;
+    chamadasLentas = Math.max(0, chamadasLentas - 1);
+    if (chamadasLentas === 0) warmupBus.esconder();
+  }
 }
 
 export const http: AxiosInstance = axios.create({
@@ -44,6 +70,7 @@ http.interceptors.request.use((config) => {
     headers.set('Authorization', `Bearer ${token}`);
     config.headers = headers;
   }
+  armarWarmup(config as ConfigEstendida);
   return config;
 });
 
@@ -67,9 +94,13 @@ async function executarRefresh(): Promise<string | null> {
 }
 
 http.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    desarmarWarmup(response.config as ConfigEstendida);
+    return response;
+  },
   async (error: AxiosError) => {
     const config = error.config as ConfigEstendida | undefined;
+    desarmarWarmup(config);
     const status = error.response?.status;
     const url = config?.url ?? '';
 
