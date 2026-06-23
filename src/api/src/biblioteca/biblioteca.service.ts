@@ -12,6 +12,7 @@ import {
   PaginationParams,
   toSkipTake,
 } from '../common/pagination/paginate';
+import { ehViolacaoUnica } from '../common/prisma/prisma-erros';
 import { AdicionarItemDto } from './dto/adicionar-item.dto';
 import { AtualizarItemDto } from './dto/atualizar-item.dto';
 
@@ -33,21 +34,33 @@ export class BibliotecaService {
       where: { usuarioId_jogoId: { usuarioId, jogoId: jogo.id } },
     });
     if (existente) {
-      throw new ConflitoException(
-        'ITEM_BIBLIOTECA_DUPLICADO',
-        'Este jogo já está na sua biblioteca.',
-      );
+      throw this.duplicado();
     }
 
-    return this.prisma.itemBiblioteca.create({
-      data: {
-        usuarioId,
-        jogoId: jogo.id,
-        status: dto.status,
-        horasJogadas: dto.horasJogadas ?? 0,
-      },
-      include: INCLUDE_JOGO,
-    });
+    try {
+      return await this.prisma.itemBiblioteca.create({
+        data: {
+          usuarioId,
+          jogoId: jogo.id,
+          status: dto.status,
+          horasJogadas: dto.horasJogadas ?? 0,
+        },
+        include: INCLUDE_JOGO,
+      });
+    } catch (erro) {
+      // Corrida: outra requisição inseriu o mesmo item entre o findUnique e o create.
+      if (ehViolacaoUnica(erro)) {
+        throw this.duplicado();
+      }
+      throw erro;
+    }
+  }
+
+  private duplicado(): ConflitoException {
+    return new ConflitoException(
+      'ITEM_BIBLIOTECA_DUPLICADO',
+      'Este jogo já está na sua biblioteca.',
+    );
   }
 
   async atualizar(usuarioId: string, itemId: string, dto: AtualizarItemDto) {

@@ -13,6 +13,7 @@ import {
   PaginationParams,
   toSkipTake,
 } from '../common/pagination/paginate';
+import { ehViolacaoUnica } from '../common/prisma/prisma-erros';
 import { CriarReviewDto } from './dto/criar-review.dto';
 import { EditarReviewDto } from './dto/editar-review.dto';
 
@@ -36,22 +37,34 @@ export class ReviewsService {
       where: { usuarioId_jogoId: { usuarioId, jogoId: jogo.id } },
     });
     if (existente) {
-      throw new ConflitoException(
-        'REVIEW_DUPLICADA',
-        'Já existe uma review deste usuário para este jogo.',
-      );
+      throw this.duplicada();
     }
 
-    return this.prisma.review.create({
-      data: {
-        usuarioId,
-        jogoId: jogo.id,
-        nota: dto.nota,
-        texto: dto.texto ?? null,
-        spoiler: dto.spoiler,
-      },
-      include: INCLUDE_REVIEW,
-    });
+    try {
+      return await this.prisma.review.create({
+        data: {
+          usuarioId,
+          jogoId: jogo.id,
+          nota: dto.nota,
+          texto: dto.texto ?? null,
+          spoiler: dto.spoiler,
+        },
+        include: INCLUDE_REVIEW,
+      });
+    } catch (erro) {
+      // Corrida: outra requisição criou a review entre o findUnique e o create.
+      if (ehViolacaoUnica(erro)) {
+        throw this.duplicada();
+      }
+      throw erro;
+    }
+  }
+
+  private duplicada(): ConflitoException {
+    return new ConflitoException(
+      'REVIEW_DUPLICADA',
+      'Já existe uma review deste usuário para este jogo.',
+    );
   }
 
   async editar(usuarioId: string, reviewId: string, dto: EditarReviewDto) {

@@ -91,4 +91,19 @@ describe('Biblioteca (e2e)', () => {
     expect(res.status).toBe(400);
     expectEnvelope(res.body);
   });
+
+  it('9. POSTs concorrentes do mesmo jogo → um 201 e um 409, nunca 500 (corrida P2002)', async () => {
+    const enviar = () =>
+      http()
+        .post('/api/v1/biblioteca')
+        .set(bearer(tokens.usuario))
+        .send({ jogoSlug: 'borderlands-2', status: 'QUERO_JOGAR' });
+
+    const [a, b] = await Promise.all([enviar(), enviar()]);
+    const statuses = [a.status, b.status].sort();
+
+    expect(statuses).toEqual([201, 409]);
+    const conflito = a.status === 409 ? a : b;
+    expectEnvelope(conflito.body, 'ITEM_BIBLIOTECA_DUPLICADO');
+  });
 });
