@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -8,6 +8,7 @@ import { Papel } from '../common/enums/papel.enum';
 import { ModeracaoService } from './moderacao.service';
 import { CriarDenunciaDto } from './dto/criar-denuncia.dto';
 import { ListarDenunciasDto } from './dto/listar-denuncias.dto';
+import { OcultarReviewDto } from './dto/ocultar-review.dto';
 
 @ApiTags('moderacao')
 @ApiBearerAuth()
@@ -30,5 +31,19 @@ export class ModeracaoController {
   @Roles(Papel.MODERADOR)
   async pendentes(@Query() query: ListarDenunciasDto) {
     return this.moderacaoService.listarPendentes(query, '/api/v1/moderation/reports');
+  }
+
+  /**
+   * Moderação: ocultar review (Moderador+). Resolve denúncias pendentes dela.
+   * Mantém a URL /reviews/:id/hide, mas a ação pertence à moderação (não às reviews).
+   */
+  @Patch('reviews/:id/hide')
+  @Roles(Papel.MODERADOR)
+  async ocultarReview(
+    @UsuarioAtual() usuario: UsuarioAutenticado,
+    @Param('id') id: string,
+    @Body() dto: OcultarReviewDto,
+  ) {
+    return this.moderacaoService.ocultarReview(usuario.id, id, dto.motivo);
   }
 }
