@@ -4,8 +4,8 @@ import { ReferenciaJogoService } from '../jogos/referencia-jogo.service';
 import {
   ConflitoException,
   NaoEncontradoException,
-  OwnershipException,
 } from '../common/exceptions/domain.exception';
+import { garantirEncontradoEDono } from '../common/authorization/ownership';
 import {
   buildPaginated,
   PaginatedResult,
@@ -102,15 +102,14 @@ export class BibliotecaService {
   /** Carrega o item e valida ownership (403 se não for do usuário). */
   private async carregarComOwnership(usuarioId: string, itemId: string) {
     const item = await this.prisma.itemBiblioteca.findUnique({ where: { id: itemId } });
-    if (!item) {
-      throw new NaoEncontradoException(
+    return garantirEncontradoEDono(
+      item,
+      new NaoEncontradoException(
         'ITEM_BIBLIOTECA_NAO_ENCONTRADO',
         'Item de biblioteca não encontrado.',
-      );
-    }
-    if (item.usuarioId !== usuarioId) {
-      throw new OwnershipException('Você só pode alterar itens da sua própria biblioteca.');
-    }
-    return item;
+      ),
+      usuarioId,
+      'Você só pode alterar itens da sua própria biblioteca.',
+    );
   }
 }

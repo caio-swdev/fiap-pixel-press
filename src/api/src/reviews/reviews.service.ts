@@ -4,9 +4,9 @@ import { ReferenciaJogoService } from '../jogos/referencia-jogo.service';
 import {
   ConflitoException,
   NaoEncontradoException,
-  OwnershipException,
   RegraNegocioException,
 } from '../common/exceptions/domain.exception';
+import { garantirEncontradoEDono } from '../common/authorization/ownership';
 import {
   buildPaginated,
   PaginatedResult,
@@ -124,12 +124,11 @@ export class ReviewsService {
 
   private async carregarComOwnership(usuarioId: string, reviewId: string) {
     const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
-    if (!review) {
-      throw new NaoEncontradoException('REVIEW_NAO_ENCONTRADA', 'Review não encontrada.');
-    }
-    if (review.usuarioId !== usuarioId) {
-      throw new OwnershipException('Você só pode alterar suas próprias reviews.');
-    }
-    return review;
+    return garantirEncontradoEDono(
+      review,
+      new NaoEncontradoException('REVIEW_NAO_ENCONTRADA', 'Review não encontrada.'),
+      usuarioId,
+      'Você só pode alterar suas próprias reviews.',
+    );
   }
 }
