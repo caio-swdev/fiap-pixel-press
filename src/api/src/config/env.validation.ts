@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUrl,
   MinLength,
@@ -37,6 +38,12 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(String(value), 10))
   @IsInt()
   RAWG_CACHE_TTL_SECONDS!: number;
+
+  // Opcional: ausente → CacheService cai no default (1000).
+  @IsOptional()
+  @Transform(({ value }) => parseInt(String(value), 10))
+  @IsInt()
+  RAWG_CACHE_MAX_ENTRIES?: number;
 
   @Transform(({ value }) => String(value).toLowerCase() === 'true')
   @IsBoolean()
