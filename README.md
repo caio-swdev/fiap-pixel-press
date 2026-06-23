@@ -1,3 +1,8 @@
+# Entregável da Atividade (Relatório de Dívida Técnica)
+
+Por favor, veja entrável na pasta:
+academic/03-atividade/relatorio-divida-tecnica.md
+
 # 🎮 PixelPress
 
 Plataforma de gerenciamento e descoberta de jogos utilizando a API da RAWG.io como fonte principal de dados.
@@ -67,6 +72,7 @@ pnpm dev:web                   # sobe a SPA   → http://localhost:5173
 >
 > **Portas:** API default `3000`, SPA `5173`. Conflito (em WSL2 o lado Windows pode reservar a 3000)?
 > Suba a API noutra porta e aponte o proxy do Vite para ela:
+>
 > ```bash
 > PORT=3001 pnpm dev:api
 > VITE_PROXY_TARGET=http://localhost:3001 pnpm dev:web
@@ -84,41 +90,41 @@ fixture local `src/api/src/jogos/rawg/jogos.fixture.json` (~12 jogos reais da RA
 
 Todas com a senha de demo **`Senha@123`**:
 
-| # | E-mail | Papel | Observação |
-|---|--------|-------|------------|
-| 1 | `admin@pixelpress.dev` | ADMIN | Atribui papéis, herda tudo |
-| 2 | `moderador@pixelpress.dev` | MODERADOR | Modera/oculta conteúdo |
-| 3 | `usuario@pixelpress.dev` | USUARIO | Biblioteca + reviews próprios |
-| 4 | `inativo@pixelpress.dev` | USUARIO | `ativo=false` → login negado (401) |
+| #   | E-mail                     | Papel     | Observação                         |
+| --- | -------------------------- | --------- | ---------------------------------- |
+| 1   | `admin@pixelpress.dev`     | ADMIN     | Atribui papéis, herda tudo         |
+| 2   | `moderador@pixelpress.dev` | MODERADOR | Modera/oculta conteúdo             |
+| 3   | `usuario@pixelpress.dev`   | USUARIO   | Biblioteca + reviews próprios      |
+| 4   | `inativo@pixelpress.dev`   | USUARIO   | `ativo=false` → login negado (401) |
 
 Seed cria ainda 4 jogos, 2 itens de biblioteca, 2 reviews e **1 denúncia pendente**.
 
 ## Endpoints (`/api/v1`)
 
-| # | Método | Rota | Auth |
-|---|--------|------|------|
-| 1 | POST | `/auth/register` · `/auth/login` · `/auth/refresh` | público |
-| 2 | GET | `/games?search=` · `/games/:slug` | público (RAWG real) |
-| 3 | GET/PATCH | `/usuarios/me` · `/usuarios/:id` | JWT |
-| 4 | GET/PATCH | `/usuarios` · `/usuarios/:id/papel` | Admin |
-| 5 | POST/GET/PATCH/DELETE | `/biblioteca` · `/biblioteca/me` · `/biblioteca/:id` | JWT (ownership) |
-| 6 | GET/POST/PATCH/DELETE | `/reviews` · `/reviews/:id` | público (GET) / JWT |
-| 7 | PATCH | `/reviews/:id/hide` | Moderador+ |
-| 8 | POST | `/reports` | JWT |
-| 9 | GET | `/moderation/reports?status=PENDENTE` | Moderador+ |
+| #   | Método                | Rota                                                 | Auth                |
+| --- | --------------------- | ---------------------------------------------------- | ------------------- |
+| 1   | POST                  | `/auth/register` · `/auth/login` · `/auth/refresh`   | público             |
+| 2   | GET                   | `/games?search=` · `/games/:slug`                    | público (RAWG real) |
+| 3   | GET/PATCH             | `/usuarios/me` · `/usuarios/:id`                     | JWT                 |
+| 4   | GET/PATCH             | `/usuarios` · `/usuarios/:id/papel`                  | Admin               |
+| 5   | POST/GET/PATCH/DELETE | `/biblioteca` · `/biblioteca/me` · `/biblioteca/:id` | JWT (ownership)     |
+| 6   | GET/POST/PATCH/DELETE | `/reviews` · `/reviews/:id`                          | público (GET) / JWT |
+| 7   | PATCH                 | `/reviews/:id/hide`                                  | Moderador+          |
+| 8   | POST                  | `/reports`                                           | JWT                 |
+| 9   | GET                   | `/moderation/reports?status=PENDENTE`                | Moderador+          |
 
 Erros no envelope `{ "error": { "code", "message", "details" } }`. Módulos `listas/`, `social/`,
 `wishlist/` ficam declarados mas vazios (fora do MVP).
 
 ## Scripts (a partir de `src/`)
 
-| # | Script | Ação |
-|---|--------|------|
-| 1 | `pnpm dev:api` | Sobe a API em watch (db+seed no prestart) → :3000 |
-| 2 | `pnpm dev:web` | Sobe a SPA em watch (Vite) → :5173 |
-| 3 | `pnpm build` | Compila api + web (`-r build`) |
-| 4 | `pnpm db:reset` | Apaga `dev.db`, recria o schema e roda o seed |
-| 5 | `pnpm db:seed` | Roda o seed (idempotente) |
+| #   | Script          | Ação                                              |
+| --- | --------------- | ------------------------------------------------- |
+| 1   | `pnpm dev:api`  | Sobe a API em watch (db+seed no prestart) → :3000 |
+| 2   | `pnpm dev:web`  | Sobe a SPA em watch (Vite) → :5173                |
+| 3   | `pnpm build`    | Compila api + web (`-r build`)                    |
+| 4   | `pnpm db:reset` | Apaga `dev.db`, recria o schema e roda o seed     |
+| 5   | `pnpm db:seed`  | Roda o seed (idempotente)                         |
 
 ---
 
@@ -127,13 +133,13 @@ Erros no envelope `{ "error": { "code", "message", "details" } }`. Módulos `lis
 A pasta [`.ai/`](./.ai) é a fonte de verdade técnica (standards, architecture,
 tech-stack, business-rules). Os documentos originais de domínio:
 
-* [01. Funcionalidades Principais](./academic/01-arquitetura/01-funcionalidades-principais.md)
-* [02. Tipos de Usuários e Permissões](./academic/01-arquitetura/02-usuarios-permissoes.md)
-* [03. Diagrama de Arquitetura (Camadas)](./academic/01-arquitetura/03-arquitetura-camadas.md)
-* [04. Entidades Principais e Relacionamentos](./academic/01-arquitetura/04-entidades-relacionamentos.md)
-* [05. Endpoints da API (Rotas REST)](./academic/01-arquitetura/05-endpoints-api.md)
-* [06. Tecnologias Sugeridas](./academic/01-arquitetura/06-tecnologias.md)
-* [07. Fluxos Principais](./academic/01-arquitetura/07-fluxos-principais.md)
+- [01. Funcionalidades Principais](./academic/01-arquitetura/01-funcionalidades-principais.md)
+- [02. Tipos de Usuários e Permissões](./academic/01-arquitetura/02-usuarios-permissoes.md)
+- [03. Diagrama de Arquitetura (Camadas)](./academic/01-arquitetura/03-arquitetura-camadas.md)
+- [04. Entidades Principais e Relacionamentos](./academic/01-arquitetura/04-entidades-relacionamentos.md)
+- [05. Endpoints da API (Rotas REST)](./academic/01-arquitetura/05-endpoints-api.md)
+- [06. Tecnologias Sugeridas](./academic/01-arquitetura/06-tecnologias.md)
+- [07. Fluxos Principais](./academic/01-arquitetura/07-fluxos-principais.md)
 
 ---
 
@@ -147,13 +153,13 @@ A aplicação utiliza a API da RAWG.io para obtenção de informações sobre jo
 
 # 🧩 Principais Funcionalidades
 
-* Busca avançada de jogos
-* Página de detalhes do jogo
-* Biblioteca pessoal
-* Sistema de avaliações e reviews
-* Listas customizadas
-* Recomendações personalizadas
-* Feed de lançamentos
-* Perfil público com estatísticas
-* Sistema social (follow + atividades)
-* Wishlist com alertas de lançamento
+- Busca avançada de jogos
+- Página de detalhes do jogo
+- Biblioteca pessoal
+- Sistema de avaliações e reviews
+- Listas customizadas
+- Recomendações personalizadas
+- Feed de lançamentos
+- Perfil público com estatísticas
+- Sistema social (follow + atividades)
+- Wishlist com alertas de lançamento
