@@ -1,7 +1,30 @@
-# PROMPT INICIAL
+# FIAP - Engenharia de Software 2.0
+
+Trabalho: Auditoria e Refatoração com IA
+
+## Integrantes do Grupo
+
+RM368446 - Caio Silva
+RM368580 - Fábio Luiz
+RM368316 - Higor Robles
+RM368253 - João Lucas
+RM367683 - Vitor Pantoja
+
+# GIT REPO
+
+https://github.com/caio-swdev/fiap-pixel-press
+
+# PROMPTS
+
+## Inicial
 
 Aja como um Arquiteto de Software, como se você viesse de fora auditar o código. Analise meu projeto e gere um relatório de dívida técnica, focando em violações de SOLID, kiss, yagni, clean architecture, e acoplamento excessivo. esse é caminho da base de codigo:
 /home/caio/github/fiap-pixel-press/src
+
+## Refatoração
+
+Refatore com base no relatório:
+relatorio-divida-tecnica.md
 
 # Relatório de Dívida Técnica — fiap-pixel-press/src
 
