@@ -17,13 +17,15 @@ import { ReviewCard } from '../components/ReviewCard';
 import { STATUS_ROTULO } from '../components/ui/Badge';
 import type { Review, StatusBiblioteca } from '../api/types';
 
-const STATUS_OPCOES: StatusBiblioteca[] = [
+// Fonte única dos status: o schema do form deriva desta lista (evita a lista
+// duplicada e fora de ordem que existia entre STATUS_OPCOES e o z.enum).
+const STATUS_OPCOES = [
   'QUERO_JOGAR',
   'JOGANDO',
   'ZERADO',
   'PLATINADO',
   'DROPEI',
-];
+] as const satisfies readonly StatusBiblioteca[];
 
 export function GameDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
@@ -259,7 +261,7 @@ export function GameDetailPage() {
 
 // ---- Modal: adicionar à biblioteca ----
 const bibliotecaSchema = z.object({
-  status: z.enum(['JOGANDO', 'ZERADO', 'QUERO_JOGAR', 'DROPEI', 'PLATINADO']),
+  status: z.enum(STATUS_OPCOES),
   horasJogadas: z.coerce.number().int().min(0).optional(),
 });
 type BibliotecaForm = z.infer<typeof bibliotecaSchema>;
