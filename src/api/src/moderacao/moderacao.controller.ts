@@ -5,6 +5,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UsuarioAtual, UsuarioAutenticado } from '../common/decorators/usuario-atual.decorator';
 import { Papel } from '../common/enums/papel.enum';
+import { apiPath } from '../common/http/api-path';
 import { ModeracaoService } from './moderacao.service';
 import { CriarDenunciaDto } from './dto/criar-denuncia.dto';
 import { ListarDenunciasDto } from './dto/listar-denuncias.dto';
@@ -30,7 +31,7 @@ export class ModeracaoController {
   @Get('moderation/reports')
   @Roles(Papel.MODERADOR)
   async pendentes(@Query() query: ListarDenunciasDto) {
-    return this.moderacaoService.listarPendentes(query, '/api/v1/moderation/reports');
+    return this.moderacaoService.listarPendentes(query, apiPath('moderation/reports'));
   }
 
   /**

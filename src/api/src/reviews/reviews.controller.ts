@@ -14,6 +14,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UsuarioAtual, UsuarioAutenticado } from '../common/decorators/usuario-atual.decorator';
+import { apiPath } from '../common/http/api-path';
 import { ReviewsService } from './reviews.service';
 import { CriarReviewDto } from './dto/criar-review.dto';
 import { EditarReviewDto } from './dto/editar-review.dto';
@@ -27,7 +28,7 @@ export class ReviewsController {
   /** Listagem pública (não exige token); oculta reviews moderadas. */
   @Get()
   async listar(@Query() query: ListarReviewsDto) {
-    return this.reviewsService.listarPublicas(query, '/api/v1/reviews', query.jogo);
+    return this.reviewsService.listarPublicas(query, apiPath('reviews'), query.jogo);
   }
 
   @Post()

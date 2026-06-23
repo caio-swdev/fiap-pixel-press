@@ -15,6 +15,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UsuarioAtual, UsuarioAutenticado } from '../common/decorators/usuario-atual.decorator';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { apiPath } from '../common/http/api-path';
 import { BibliotecaService } from './biblioteca.service';
 import { AdicionarItemDto } from './dto/adicionar-item.dto';
 import { AtualizarItemDto } from './dto/atualizar-item.dto';
@@ -39,7 +40,7 @@ export class BibliotecaController {
     @UsuarioAtual() usuario: UsuarioAutenticado,
     @Query() query: PaginationQueryDto,
   ) {
-    return this.bibliotecaService.listarDoUsuario(usuario.id, query, '/api/v1/biblioteca/me');
+    return this.bibliotecaService.listarDoUsuario(usuario.id, query, apiPath('biblioteca/me'));
   }
 
   @Patch(':id')

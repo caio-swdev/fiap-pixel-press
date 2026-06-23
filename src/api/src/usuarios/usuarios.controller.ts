@@ -14,6 +14,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { UsuarioAtual, UsuarioAutenticado } from '../common/decorators/usuario-atual.decorator';
 import { Papel } from '../common/enums/papel.enum';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { apiPath } from '../common/http/api-path';
 import { UsuariosService } from './usuarios.service';
 import { AtualizarPerfilDto } from './dto/atualizar-perfil.dto';
 import { AtribuirPapelDto } from './dto/atribuir-papel.dto';
@@ -41,7 +42,7 @@ export class UsuariosController {
   @Get()
   @Roles(Papel.ADMIN)
   async listar(@Query() query: PaginationQueryDto) {
-    return this.usuariosService.listar(query, '/api/v1/usuarios');
+    return this.usuariosService.listar(query, apiPath('usuarios'));
   }
 
   @Get(':id')

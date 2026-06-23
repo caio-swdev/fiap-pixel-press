@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { apiPath } from '../common/http/api-path';
 import { JogosService } from './jogos.service';
 import { BuscarJogosDto } from './dto/buscar-jogos.dto';
 
@@ -11,7 +12,7 @@ export class JogosController {
 
   @Get()
   async buscar(@Query() query: BuscarJogosDto) {
-    return this.jogosService.buscar(query, '/api/v1/games');
+    return this.jogosService.buscar(query, apiPath('games'));
   }
 
   @Get(':slug')
