@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { JogosService } from '../jogos/jogos.service';
+import { ReferenciaJogoService } from '../jogos/referencia-jogo.service';
 import {
   ConflitoException,
   NaoEncontradoException,
@@ -24,11 +24,11 @@ const INCLUDE_JOGO = {
 export class BibliotecaService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jogosService: JogosService,
+    private readonly referenciaJogo: ReferenciaJogoService,
   ) {}
 
   async adicionar(usuarioId: string, dto: AdicionarItemDto) {
-    const jogo = await this.jogosService.garantirReferencia(dto.jogoSlug);
+    const jogo = await this.referenciaJogo.garantir(dto.jogoSlug);
 
     const existente = await this.prisma.itemBiblioteca.findUnique({
       where: { usuarioId_jogoId: { usuarioId, jogoId: jogo.id } },

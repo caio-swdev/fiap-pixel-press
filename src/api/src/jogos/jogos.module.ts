@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JogosController } from './jogos.controller';
 import { JogosService } from './jogos.service';
+import { ReferenciaJogoService } from './referencia-jogo.service';
 import { HttpRawgClient } from './rawg/http-rawg.client';
 import { MockRawgClient } from './rawg/mock-rawg.client';
 import { RAWG_CLIENT } from './rawg/rawg.types';
@@ -17,6 +18,7 @@ import { RAWG_CLIENT } from './rawg/rawg.types';
   controllers: [JogosController],
   providers: [
     JogosService,
+    ReferenciaJogoService,
     HttpRawgClient,
     MockRawgClient,
     {
@@ -29,6 +31,6 @@ import { RAWG_CLIENT } from './rawg/rawg.types';
       ) => (config.get<boolean>('USE_RAWG_MOCK') ? mockClient : httpClient),
     },
   ],
-  exports: [JogosService],
+  exports: [JogosService, ReferenciaJogoService],
 })
 export class JogosModule {}
